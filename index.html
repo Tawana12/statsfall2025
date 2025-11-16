@@ -17,34 +17,49 @@ body {
     margin: 20px;
 }
 .container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: auto;
 }
-#slider {
-    margin: 20px 0;
+
+/* Centered + larger graph wrapper */
+.chart-wrapper {
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto 40px auto;
 }
-h2 {
-    margin-top: 40px;
-}
+
+/* Make charts larger and centered */
 canvas {
-    width: 100%;
-    max-height: 350px;
+    width: 100% !important;
+    height: 420px !important;
+    display: block;
+    margin: 0 auto;
 }
+
 .summary-boxes {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
     margin: 20px 0;
 }
+
 .summary-box {
     flex: 1 1 30%;
     padding: 12px;
     border: 1px solid #ccc;
     background: #fafafa;
 }
+
 .summary-label {
     font-weight: bold;
 }
+
+#slider {
+    width: 90%;
+    max-width: 900px;
+    margin: 20px auto;
+}
+
 .download-box {
     border: 1px solid #ccc;
     background: #fafafa;
@@ -94,27 +109,39 @@ canvas {
 </div>
 
 <h2>Sunspots Over Time</h2>
-<canvas id="sunChart"></canvas>
+<div class="chart-wrapper">
+    <canvas id="sunChart"></canvas>
+</div>
 
 <h2>TSI Over Time</h2>
-<canvas id="tsiChart"></canvas>
+<div class="chart-wrapper">
+    <canvas id="tsiChart"></canvas>
+</div>
 
 <h2>Temperature Anomalies Over Time</h2>
-<canvas id="tempChart"></canvas>
+<div class="chart-wrapper">
+    <canvas id="tempChart"></canvas>
+</div>
 
 <h2>Combined Comparison</h2>
-<canvas id="combinedChart"></canvas>
+<div class="chart-wrapper">
+    <canvas id="combinedChart"></canvas>
+</div>
 
 <h2>Temperature vs Sunspots</h2>
-<canvas id="scatterSun"></canvas>
+<div class="chart-wrapper">
+    <canvas id="scatterSun"></canvas>
+</div>
 
 <h2>Temperature vs TSI</h2>
-<canvas id="scatterTSI"></canvas>
+<div class="chart-wrapper">
+    <canvas id="scatterTSI"></canvas>
+</div>
 
 </div>
 
 <script>
-// --- CSV PARSER ---
+// -------- CSV PARSER --------
 function csvToRows(text) {
     const lines = text.trim().split(/\r?\n/);
     const headers = lines[0].split(',').map(h => h.trim());
@@ -126,7 +153,7 @@ function csvToRows(text) {
     });
 }
 
-// --- GLOBAL DATA ---
+// -------- GLOBAL DATA --------
 let yearly = {};
 let years = [];
 let charts = {};
@@ -148,6 +175,7 @@ Promise.all([
 
 });
 
+// -------- PROCESS DATA --------
 function processData(sun, tsi, temp) {
     const full = ["January","February","March","April","May","June",
                   "July","August","September","October","November","December"];
@@ -181,7 +209,7 @@ function processData(sun, tsi, temp) {
                   .sort((a,b)=>a-b);
 }
 
-// --- RANGE SLIDER ---
+// -------- SLIDER SETUP --------
 function setupSlider() {
     let slider = document.getElementById("slider");
 
@@ -204,7 +232,7 @@ function setupSlider() {
     slider.noUiSlider.on("update", updateDashboard);
 }
 
-// --- UPDATE DASHBOARD ---
+// -------- UPDATE DASHBOARD --------
 function updateDashboard() {
     let [start, end] = document.getElementById("slider").noUiSlider.get();
     start = parseInt(start);
@@ -219,7 +247,6 @@ function updateDashboard() {
     let tsi = filteredYears.map(y => yearly[y].tsi);
     let temp = filteredYears.map(y => yearly[y].temp);
 
-    // Update summary
     document.getElementById("avgSun").innerText =
         (sun.reduce((a,b)=>a+b)/sun.length).toFixed(2);
 
@@ -232,10 +259,8 @@ function updateDashboard() {
     drawCharts(filteredYears, sun, tsi, temp);
 }
 
-// --- CHART HANDLING ---
-function destroy(id) {
-    if (charts[id]) charts[id].destroy();
-}
+// -------- DRAW CHARTS --------
+function destroy(id) { if (charts[id]) charts[id].destroy(); }
 
 function drawCharts(lbls, sun, tsi, temp) {
 

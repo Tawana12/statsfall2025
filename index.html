@@ -16,19 +16,50 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
 }
+
 .container {
     max-width: 1200px;
     margin: auto;
 }
 
-/* Centered + larger graph wrapper */
+/* Tabs */
+.tab-container {
+    margin-top: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-buttons button {
+    padding: 10px 16px;
+    border: 1px solid #ccc;
+    background: #eee;
+    cursor: pointer;
+}
+
+.tab-buttons button.active {
+    background: #ddd;
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Charts */
 .chart-wrapper {
     width: 90%;
     max-width: 900px;
     margin: 0 auto 40px auto;
 }
 
-/* Make charts larger and centered */
 canvas {
     width: 100% !important;
     height: 420px !important;
@@ -66,9 +97,17 @@ canvas {
     padding: 15px;
     margin-top: 20px;
 }
+
 .download-box ul {
     margin: 0;
     padding-left: 20px;
+}
+
+/* Notebook iframe */
+#notebookFrame {
+    width: 100%;
+    height: 900px;
+    border: 1px solid #ccc;
 }
 </style>
 </head>
@@ -78,70 +117,102 @@ canvas {
 
 <h1>Solar Activity & Global Temperature Dashboard</h1>
 
-<!-- DOWNLOAD SECTION -->
-<h3>Download Data & Notebook</h3>
-<div class="download-box">
-  <ul>
-    <li><a href="Sunspots.csv" download>Download Sunspots CSV</a></li>
-    <li><a href="TSI.csv" download>Download TSI CSV</a></li>
-    <li><a href="Temperatures.csv" download>Download Temperatures CSV</a></li>
-    <li><a href="Final Notebook.ipynb" download>Download Final Notebook (.ipynb)</a></li>
-  </ul>
-</div>
+<!-- TABS -->
+<div class="tab-container">
 
-<h3>Select Year Range</h3>
-<div id="slider"></div>
-<div id="rangeText" style="margin-top:10px; font-weight:bold;"></div>
-
-<div class="summary-boxes">
-    <div class="summary-box">
-        <span class="summary-label">Average Sunspots</span><br>
-        <span id="avgSun">–</span>
+    <div class="tab-buttons">
+        <button class="active" onclick="openTab('dashboard')">Dashboard</button>
+        <button onclick="openTab('notebook')">Notebook Viewer</button>
     </div>
-    <div class="summary-box">
-        <span class="summary-label">Average TSI</span><br>
-        <span id="avgTSI">–</span>
+
+    <!-- DASHBOARD TAB -->
+    <div id="dashboard" class="tab-content active">
+
+        <!-- DOWNLOAD SECTION -->
+        <h3>Download Data & Notebook</h3>
+        <div class="download-box">
+          <ul>
+            <li><a href="Sunspots.csv" download>Download Sunspots CSV</a></li>
+            <li><a href="TSI.csv" download>Download TSI CSV</a></li>
+            <li><a href="Temperatures.csv" download>Download Temperatures CSV</a></li>
+            <li><a href="Final Notebook.ipynb" download>Download Final Notebook (.ipynb)</a></li>
+          </ul>
+        </div>
+
+        <h3>Select Year Range</h3>
+        <div id="slider"></div>
+        <div id="rangeText" style="margin-top:10px; font-weight:bold;"></div>
+
+        <div class="summary-boxes">
+            <div class="summary-box">
+                <span class="summary-label">Average Sunspots (count)</span><br>
+                <span id="avgSun">–</span>
+            </div>
+            <div class="summary-box">
+                <span class="summary-label">Average TSI (W/m²)</span><br>
+                <span id="avgTSI">–</span>
+            </div>
+            <div class="summary-box">
+                <span class="summary-label">Average Temperature Anomaly (°C)</span><br>
+                <span id="avgTemp">–</span>
+            </div>
+        </div>
+
+        <h2>Sunspots Over Time (count)</h2>
+        <div class="chart-wrapper">
+            <canvas id="sunChart"></canvas>
+        </div>
+
+        <h2>Total Solar Irradiance Over Time (W/m²)</h2>
+        <div class="chart-wrapper">
+            <canvas id="tsiChart"></canvas>
+        </div>
+
+        <h2>Temperature Anomalies Over Time (°C)</h2>
+        <div class="chart-wrapper">
+            <canvas id="tempChart"></canvas>
+        </div>
+
+        <h2>Combined Comparison (scaled)</h2>
+        <div class="chart-wrapper">
+            <canvas id="combinedChart"></canvas>
+        </div>
+
+        <h2>Temperature Anomaly vs Sunspots</h2>
+        <div class="chart-wrapper">
+            <canvas id="scatterSun"></canvas>
+        </div>
+
+        <h2>Temperature Anomaly vs TSI (W/m²)</h2>
+        <div class="chart-wrapper">
+            <canvas id="scatterTSI"></canvas>
+        </div>
+
     </div>
-    <div class="summary-box">
-        <span class="summary-label">Average Temp Anomaly</span><br>
-        <span id="avgTemp">–</span>
+
+    <!-- NOTEBOOK TAB -->
+    <div id="notebook" class="tab-content">
+        <h2>Notebook Viewer</h2>
+        <iframe id="notebookFrame"
+                src="https://nbviewer.org/github/Tawana12/statsfall2025/blob/main/Final%20Notebook.ipynb">
+        </iframe>
     </div>
-</div>
 
-<h2>Sunspots Over Time</h2>
-<div class="chart-wrapper">
-    <canvas id="sunChart"></canvas>
-</div>
-
-<h2>TSI Over Time</h2>
-<div class="chart-wrapper">
-    <canvas id="tsiChart"></canvas>
-</div>
-
-<h2>Temperature Anomalies Over Time</h2>
-<div class="chart-wrapper">
-    <canvas id="tempChart"></canvas>
-</div>
-
-<h2>Combined Comparison</h2>
-<div class="chart-wrapper">
-    <canvas id="combinedChart"></canvas>
-</div>
-
-<h2>Temperature vs Sunspots</h2>
-<div class="chart-wrapper">
-    <canvas id="scatterSun"></canvas>
-</div>
-
-<h2>Temperature vs TSI</h2>
-<div class="chart-wrapper">
-    <canvas id="scatterTSI"></canvas>
 </div>
 
 </div>
 
 <script>
-// -------- CSV PARSER --------
+// TAB SWITCHING
+function openTab(tabName) {
+    document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-buttons button").forEach(b => b.classList.remove("active"));
+
+    document.getElementById(tabName).classList.add("active");
+    event.target.classList.add("active");
+}
+
+// CSV PARSER
 function csvToRows(text) {
     const lines = text.trim().split(/\r?\n/);
     const headers = lines[0].split(',').map(h => h.trim());
@@ -153,12 +224,10 @@ function csvToRows(text) {
     });
 }
 
-// -------- GLOBAL DATA --------
 let yearly = {};
 let years = [];
 let charts = {};
 
-// Load CSV files
 Promise.all([
     fetch("Sunspots.csv").then(r => r.text()),
     fetch("TSI.csv").then(r => r.text()),
@@ -175,7 +244,7 @@ Promise.all([
 
 });
 
-// -------- PROCESS DATA --------
+// PROCESS DATA
 function processData(sun, tsi, temp) {
     const full = ["January","February","March","April","May","June",
                   "July","August","September","October","November","December"];
@@ -209,7 +278,7 @@ function processData(sun, tsi, temp) {
                   .sort((a,b)=>a-b);
 }
 
-// -------- SLIDER SETUP --------
+// SLIDER
 function setupSlider() {
     let slider = document.getElementById("slider");
 
@@ -232,7 +301,7 @@ function setupSlider() {
     slider.noUiSlider.on("update", updateDashboard);
 }
 
-// -------- UPDATE DASHBOARD --------
+// UPDATE DASHBOARD
 function updateDashboard() {
     let [start, end] = document.getElementById("slider").noUiSlider.get();
     start = parseInt(start);
@@ -259,7 +328,7 @@ function updateDashboard() {
     drawCharts(filteredYears, sun, tsi, temp);
 }
 
-// -------- DRAW CHARTS --------
+// CHART DRAWING
 function destroy(id) { if (charts[id]) charts[id].destroy(); }
 
 function drawCharts(lbls, sun, tsi, temp) {
@@ -267,19 +336,31 @@ function drawCharts(lbls, sun, tsi, temp) {
     destroy("sun");
     charts.sun = new Chart(document.getElementById("sunChart"), {
         type: "line",
-        data: { labels: lbls, datasets: [{ label:"Sunspots", data:sun, borderColor:"orange"}] }
+        data: { labels: lbls, datasets: [{ 
+            label:"Sunspots (count)", 
+            data:sun, 
+            borderColor:"orange" 
+        }] }
     });
 
     destroy("tsi");
     charts.tsi = new Chart(document.getElementById("tsiChart"), {
         type: "line",
-        data: { labels: lbls, datasets: [{ label:"TSI", data:tsi, borderColor:"green"}] }
+        data: { labels: lbls, datasets: [{ 
+            label:"TSI (W/m²)",
+            data:tsi, 
+            borderColor:"green"
+        }] }
     });
 
     destroy("temp");
     charts.temp = new Chart(document.getElementById("tempChart"), {
         type: "line",
-        data: { labels: lbls, datasets: [{ label:"Temperature", data:temp, borderColor:"red"}] }
+        data: { labels: lbls, datasets: [{ 
+            label:"Temperature Anomaly (°C)", 
+            data:temp, 
+            borderColor:"red"
+        }] }
     });
 
     destroy("combined");
@@ -289,8 +370,8 @@ function drawCharts(lbls, sun, tsi, temp) {
             labels: lbls,
             datasets: [
                 { label:"Sunspots (÷10)", data: sun.map(v=>v/10), borderColor:"orange"},
-                { label:"TSI (−1360)", data: tsi.map(v=>v-1360), borderColor:"green"},
-                { label:"Temp", data: temp, borderColor:"red"}
+                { label:"TSI (−1360 W/m²)", data: tsi.map(v=>v-1360), borderColor:"green"},
+                { label:"Temperature Anomaly (°C)", data: temp, borderColor:"red"}
             ]
         }
     });
@@ -299,7 +380,7 @@ function drawCharts(lbls, sun, tsi, temp) {
     charts.scatterSun = new Chart(document.getElementById("scatterSun"), {
         type: "scatter",
         data: { datasets: [{
-            label:"Temp vs Sunspots",
+            label:"Temp Anomaly (°C) vs Sunspots",
             data: lbls.map((y,i)=>({x:sun[i],y:temp[i]})),
             backgroundColor:"orange"
         }] }
@@ -309,7 +390,7 @@ function drawCharts(lbls, sun, tsi, temp) {
     charts.scatterTSI = new Chart(document.getElementById("scatterTSI"), {
         type: "scatter",
         data: { datasets: [{
-            label:"Temp vs TSI",
+            label:"Temp Anomaly (°C) vs TSI (W/m²)",
             data: lbls.map((y,i)=>({x:tsi[i],y:temp[i]})),
             backgroundColor:"blue"
         }] }

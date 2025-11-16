@@ -45,6 +45,16 @@ canvas {
 .summary-label {
     font-weight: bold;
 }
+.download-box {
+    border: 1px solid #ccc;
+    background: #fafafa;
+    padding: 15px;
+    margin-top: 20px;
+}
+.download-box ul {
+    margin: 0;
+    padding-left: 20px;
+}
 </style>
 </head>
 
@@ -52,6 +62,17 @@ canvas {
 <div class="container">
 
 <h1>Solar Activity & Global Temperature Dashboard</h1>
+
+<!-- DOWNLOAD SECTION -->
+<h3>Download Data & Notebook</h3>
+<div class="download-box">
+  <ul>
+    <li><a href="Sunspots.csv" download>Download Sunspots CSV</a></li>
+    <li><a href="TSI.csv" download>Download TSI CSV</a></li>
+    <li><a href="Temperatures.csv" download>Download Temperatures CSV</a></li>
+    <li><a href="Final Notebook.ipynb" download>Download Final Notebook (.ipynb)</a></li>
+  </ul>
+</div>
 
 <h3>Select Year Range</h3>
 <div id="slider"></div>
@@ -199,14 +220,19 @@ function updateDashboard() {
     let temp = filteredYears.map(y => yearly[y].temp);
 
     // Update summary
-    document.getElementById("avgSun").innerText = (sun.reduce((a,b)=>a+b)/sun.length).toFixed(2);
-    document.getElementById("avgTSI").innerText = (tsi.reduce((a,b)=>a+b)/tsi.length).toFixed(3);
-    document.getElementById("avgTemp").innerText = (temp.reduce((a,b)=>a+b)/temp.length).toFixed(3);
+    document.getElementById("avgSun").innerText =
+        (sun.reduce((a,b)=>a+b)/sun.length).toFixed(2);
+
+    document.getElementById("avgTSI").innerText =
+        (tsi.reduce((a,b)=>a+b)/tsi.length).toFixed(3);
+
+    document.getElementById("avgTemp").innerText =
+        (temp.reduce((a,b)=>a+b)/temp.length).toFixed(3);
 
     drawCharts(filteredYears, sun, tsi, temp);
 }
 
-// --- DRAWING CHARTS ---
+// --- CHART HANDLING ---
 function destroy(id) {
     if (charts[id]) charts[id].destroy();
 }
@@ -247,13 +273,21 @@ function drawCharts(lbls, sun, tsi, temp) {
     destroy("scatterSun");
     charts.scatterSun = new Chart(document.getElementById("scatterSun"), {
         type: "scatter",
-        data: { datasets: [{ label:"Temp vs Sunspots", data: lbls.map((y,i)=>({x:sun[i],y:temp[i]})), backgroundColor:"orange"}] }
+        data: { datasets: [{
+            label:"Temp vs Sunspots",
+            data: lbls.map((y,i)=>({x:sun[i],y:temp[i]})),
+            backgroundColor:"orange"
+        }] }
     });
 
     destroy("scatterTSI");
     charts.scatterTSI = new Chart(document.getElementById("scatterTSI"), {
         type: "scatter",
-        data: { datasets: [{ label:"Temp vs TSI", data: lbls.map((y,i)=>({x:tsi[i],y:temp[i]})), backgroundColor:"blue"}] }
+        data: { datasets: [{
+            label:"Temp vs TSI",
+            data: lbls.map((y,i)=>({x:tsi[i],y:temp[i]})),
+            backgroundColor:"blue"
+        }] }
     });
 }
 
